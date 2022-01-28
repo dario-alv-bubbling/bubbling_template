@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-import os
+from os import environ, path
 
 from bubbling_template.settings import USE_S3
 from bubbling_template.settings.components import BASE_DIR
@@ -18,15 +18,15 @@ from bubbling_template.settings.components import BASE_DIR
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = environ.get('SECRET_KEY')
 
 # Application definition
 
 INSTALLED_APPS = [
     # project apps:
-    'dummy',
+    # 'dummy',
     'core',
-    'healthchecks',
+    # 'healthchecks',
 
     # default django apps:
     'django.contrib.auth',
@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 
     # Third party apps
     'rest_framework',
-    'softdelete',
+    # 'softdelete',
     'bubbling_firebase_authentication',
     'corsheaders',
     'drf_yasg',
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # "'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,7 +73,7 @@ ROOT_URLCONF = 'bubbling_template.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -89,7 +90,6 @@ WSGI_APPLICATION = 'bubbling_template.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -105,9 +105,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+        'bubbling_firebase_authentication.authentication.FirebaseAuthenticationAnonymous',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'bubbling_firebase_authentication.firebase_anonymous_permissions.IsAuthenticatedAnonymous',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -118,43 +131,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
-# SERVING MEDIA AND STATIC FILES (https://testdriven.io/blog/storing-django-static-and-media-files-on-amazon-s3/)
-# Media files
-# Media root dir is commonly changed in production
-# (see development.py and production.py).
-# https://docs.djangoproject.com/en/3.1/topics/files/
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-# The URL to use when referring to static files (where they will be served from)
-# USE_S3 is set on __init__.py
-
-if USE_S3:
-    # aws settings
-    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-    AWS_DEFAULT_ACL = None
-    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
-    # s3 static settings (in order to store site content...)
-    # STATIC_LOCATION = 'static'
-    # STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
-    # STATICFILES_STORAGE = 'common.storage_backends.StaticStorage'
-    # s3 public media settings
-    PUBLIC_MEDIA_LOCATION = 'media'
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
-    DEFAULT_FILE_STORAGE = 'core.storage_backends.PublicMediaStorage'
-else:
-    MEDIA_URL = '/mediafiles/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),) # TODO: investigate: https://stackoverflow.com/questions/41904685/oserror-errno-2-no-such-file-or-directory-tmp-makecalls-static
-
 COMPANY_NAME = 'Bubbling'
 COMPANY_SITE = 'https://bubbling.eu'
 
@@ -162,23 +138,4 @@ PAGINATION = {
     'PAGE_SIZE': 20,
     'MAX_PAGE_SIZE': 100,
     'PAGE_SIZE_QUERY_PARAM': 'page_size'
-}
-
-SERVICE_ACCOUNT_KEY_FILE = {
-    "type": "service_account",
-    "project_id": os.getenv('FIREBASE_PROJECT_ID'),
-    "private_key_id": os.getenv('FIREBASE_PRIVATE_KEY_ID'),
-    "private_key": os.getenv('FIREBASE_PRIVATE_KEY').replace('\\n', '\n'),
-    "client_email": os.getenv('FIREBASE_CLIENT_EMAIL'),
-    "client_id": os.getenv('FIREBASE_CLIENT_ID'),
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": os.getenv('FIREBASE_CLIENT_X509_CERT_URL')
-}
-
-FIREBASE_AUTH = {
-    "SERVICE_ACCOUNT_KEY_FILE": SERVICE_ACCOUNT_KEY_FILE,
-    # require that user has verified their email
-    "EMAIL_VERIFICATION": False
 }

@@ -11,25 +11,30 @@ To change settings file:
 from split_settings.tools import optional, include
 from os import environ
 
-ENV = environ.get('DJANGO_ENV') or 'development'
-USE_S3 = environ.get('USE_S3') == 'TRUE' or False
+ENV = environ.get('DJANGO_ENV', default='development')
 
-# ENV = 'staging'
+USE_S3 = environ.get('USE_S3', default=False) == 'TRUE'
 
 base_settings = [
     'components/common.py',  # standard django settings
     'components/database.py',  # postgres
-    'components/rq.py',  # redis and redis-queue
     'components/emails.py',  # smtp
-    'components/logging.py',
     'components/firebase.py',
+    'components/logging.py',
+    'components/rq.py',  # redis and redis-queue
+    'components/storage.py',  # static files, media and S3
     'components/swagger.py',
+    'components/timeouts.py',  # request timeouts
 
     # You can even use glob:
     # 'components/*.py'
 
     # Select the right env:
     'environments/{0}.py'.format(ENV),
+
+    # Dependent on env:
+    'components/endpoints.py',  # bubbling endpoints
+
     # Optionally override some settings:
     optional('environments/local.py'),
 ]

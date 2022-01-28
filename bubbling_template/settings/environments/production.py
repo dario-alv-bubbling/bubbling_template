@@ -1,13 +1,12 @@
 """
 additional settings used in production
 """
-import logging
+BUBBLING_ENV = 'prod'
 
-DEBUG = False
+FRONTEND_HOST = 'https://bubbling.eu'
 
-ALLOWED_HOSTS = ['']
-
-FRONTEND_HOST = '******'
+ALLOWED_HOSTS = ['...',
+                 '127.0.0.1']
 
 # For django storages
 # AZURE_ACCOUNT_NAME = "******"
@@ -22,22 +21,3 @@ FRONTEND_HOST = '******'
 # MEDIAFILES_LOCATION = 'mediafiles'
 # DEFAULT_FILE_STORAGE = '******'
 # MEDIA_URL = "https://%s/%s/" % (AZURE_BLOB_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
-
-logging.basicConfig(
-    level=logging.WARNING,
-    format='%(asctime)s %(levelname)s %(message)s',
-    filename='/server_logs.log',
-    filemode='a'
-)
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'bubbling_firebase_authentication.authentication.FirebaseAuthenticationAnonymous',
-    ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'bubbling_firebase_authentication.firebase_anonymous_permissions.IsAuthenticatedAnonymous',
-    ),
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    )
-}

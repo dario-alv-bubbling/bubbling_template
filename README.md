@@ -2,7 +2,7 @@
 This repository is a boilerplate Django project for quickly getting started.
 
 ## env recommendations
-- Python v3.9.2, install it on your local machine
+- Python v3.10.1, install it on your local machine
 ```bash
 $ cd <project-repo-folder>
 $ python -m venv /path/to/new/virtual/environment

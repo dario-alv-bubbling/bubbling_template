@@ -1,27 +1,31 @@
-
-# Database
+"""
+Relational, NoSQL and Object Relational Databases
+Needs default database, but can user others
+"""
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
-import os
+from os import environ
+import dj_database_url
 
-from bubbling_template.settings.components import BASE_DIR
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 DB_PREFIX = 'bubbling_template_'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': environ.get('DATABASE_NAME'),
+        'USER': environ.get('DATABASE_USER'),
+        'PASSWORD': environ.get('DATABASE_PASSWORD'),
+        'HOST': environ.get('DATABASE_HOST'),
+        'PORT': environ.get('DATABASE_PORT'),
+        'CONN_MAX_AGE': int(environ.get('DATABASE_CONN_MAX_AGE')),
+        'OPTIONS': {
+            'connect_timeout': int(environ.get('DATABASE_CONNECTION_TIMEOUT', 10)),
+        },
     }
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': os.getenv("DATABASE_NAME"),
-    #     'USER': os.getenv("DATABASE_USER"),
-    #     'PASSWORD': os.getenv("DATABASE_PASSWORD"),
-    #     'HOST': os.getenv("DATABASE_HOST"),
-    #     'PORT': os.getenv("DATABASE_PORT"),
-    #     'CONN_MAX_AGE': int(os.getenv("DATABASE_CONN_MAX_AGE")),
-    #     'OPTIONS': {
-    #         'connect_timeout': 10,
-    #     },
-    # }
 }
+
+# For other database configurations
+# (heroku: Update database configuration from $DATABASE_URL)
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
