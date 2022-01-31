@@ -10,8 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 from os import environ, path
-
-from bubbling_template.settings import USE_S3
 from bubbling_template.settings.components import BASE_DIR
 
 # Quick-start development settings - unsuitable for production
