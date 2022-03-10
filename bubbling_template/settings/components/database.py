@@ -18,7 +18,7 @@ DATABASES = {
         'PASSWORD': environ.get('DATABASE_PASSWORD'),
         'HOST': environ.get('DATABASE_HOST'),
         'PORT': environ.get('DATABASE_PORT'),
-        'CONN_MAX_AGE': int(environ.get('DATABASE_CONN_MAX_AGE')),
+        'CONN_MAX_AGE': int(environ.get('DATABASE_CONN_MAX_AGE', 600)),
         'OPTIONS': {
             'connect_timeout': int(environ.get('DATABASE_CONNECTION_TIMEOUT', 10)),
         },

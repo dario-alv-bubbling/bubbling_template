@@ -49,18 +49,19 @@ INSTALLED_APPS = [
     'rest_framework',
     # 'softdelete',
     'bubbling_firebase_authentication',
-    'corsheaders',
+    # 'corsheaders',
     'drf_yasg',
     'storages'
 ]
 
 MIDDLEWARE = [
+    # 'corsheaders.middleware.CorsMiddleware',  # apply before WhiteNoise and CommonMiddleware
     'django.middleware.security.SecurityMiddleware',
     # "'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    # 'corsheaders.middleware.CorsPostCsrfMiddleware',  # apply after CsrfViewMiddleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -137,3 +138,14 @@ PAGINATION = {
     'MAX_PAGE_SIZE': 100,
     'PAGE_SIZE_QUERY_PARAM': 'page_size'
 }
+
+# CORS Headers configuration
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#    r'(http(s)?://)?localhost(:)?.*',
+#    r'(http(s)?://)?127\.0\.0\.1(:)?.*'
+# ]
+
+# unlike CSRF_TRUSTED_ORIGINS, this setting does not allow you to distinguish between
+# domains that are trusted to read resources by CORS and domains that are trusted to change resources
+# by avoiding CSRF protection
+# CORS_REPLACE_HTTPS_REFERER = True
